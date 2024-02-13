@@ -18,7 +18,7 @@
 
 
 url="https://anc.ca.apm.activecommunities.com/vancouver/rest/activity/detail"
-poll_every=5
+poll_every=30
 json_path='.body.detail.space_type'
 expected_value=2
 
