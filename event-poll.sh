@@ -21,7 +21,7 @@ rest="https://anc.ca.apm.activecommunities.com/vancouver/rest/activity/detail"
 enroll="https://anc.ca.apm.activecommunities.com/vancouver/activity/search/detail"
 
 poll_every=30
-max_poll=8*60*2
+max_poll=$((8*60*2))
 available=2
 count=0
 
