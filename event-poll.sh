@@ -17,26 +17,51 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-url="https://anc.ca.apm.activecommunities.com/vancouver/rest/activity/detail"
+rest="https://anc.ca.apm.activecommunities.com/vancouver/rest/activity/detail"
+enroll="https://anc.ca.apm.activecommunities.com/vancouver/activity/search/detail"
+
 poll_every=30
-json_path='.body.detail.space_type'
-expected_value=2
+max_poll=8*60*2
+available=2
+count=0
+
+title="Hockey Notification"
+
+finish() {
+    echo -e "\a"
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        osascript \
+            -e "display dialog \"$1\" with title \"$title\" \
+                buttons {\"Enroll Now\", \"Cancel\"} default button \"Enroll Now\" cancel button \"Cancel\"" \
+            -e "if button returned of result is \"Enroll Now\" then open location \"$2\""
+    else
+        printf $1 $2
+    fi
+}
 
 echo -e "\a"
-printf "\nEnter event ID to poll: "
+printf "Enter event ID to poll: "
 read id
 
-printf "\nPolling '$url/$id' every $poll_every seconds, until space_type turns to '$expected_value'\n"
+printf "Polling event '$id' every $poll_every seconds, until space is '$available'\n"
 
 while true; do
-  x=$(curl -s "$url/$id" | jq "$json_path")
-  printf "\r$(date +%H:%M:%S): status: $x (expecting: $expected_value)"
+    space_type=$(curl -s "$rest/$id" | jq '.body.detail.space_type')
 
-  if [[ "$x" == "$expected_value" ]]; then
-    print "Found an empty slot. Hurry up and enroll!"
-    echo -e "\a"
-    break
-  fi
+    printf "\r$(date +%H:%M:%S): space_type=$space_type (expecting=$available) count=$count (max=$max_poll)"
 
-  sleep $poll_every
+    if [[ "$space_type" == "$available" ]]; then
+        finish "Open spot detected, hurry up and enroll!" "$enroll/$id"
+        break
+    fi
+
+    ((count++))
+
+    if [[ "$max_poll" > 0 && "$count" == "$max_poll" ]]; then
+        finish "Max poll count reached. Tough luck!" "$enroll/$id"
+        break;
+    fi
+
+    sleep $poll_every
 done
