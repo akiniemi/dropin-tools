@@ -56,12 +56,12 @@ while true; do
         break
     fi
 
-    ((count++))
-
     if [[ "$max_poll" > 0 && "$count" == "$max_poll" ]]; then
         finish "Max poll count reached. Tough luck!" "$enroll/$id"
         break;
     fi
 
     sleep $poll_every
+
+    ((count++))
 done
