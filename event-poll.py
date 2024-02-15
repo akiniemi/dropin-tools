@@ -38,6 +38,10 @@ parser.add_argument('-m', '--max-poll',
                     type=int,
                     help='The maximum number of polls',
                     default=480)
+parser.add_argument('-e', '--event',
+                    type=int,
+                    help='Event ID to poll',
+                    default=None)
 
 # Parse the command-line arguments
 args = parser.parse_args()
@@ -66,10 +70,13 @@ def finish(msg: str, url: str):
         print(f'{msg}\n{url}')
 
 
-event = input("Enter the ID to poll: ")
+if not args.event:
+    event = input("Enter the ID to poll: ")
+else:
+    event = args.event
 
-print(f'Polling event {event} every {args.interval} seconds until space shows '
-      f'as available ({available}) or poll count reaches {args.max_poll}')
+print(f'Polling event {event} every {args.interval} seconds until space '
+      f'available or poll count reaches {args.max_poll}')
 
 poll = f'{rest}/{event}'
 url = f'{enroll}/{event}'
@@ -79,7 +86,7 @@ while True:
     data = response.json()
 
     space_type = data['body']['detail']['space_type']
-    print(f'{time.strftime("%H:%M:%S")}: event is showing '
+    print(f'{time.strftime("%H:%M:%S")} ==> event is showing '
           f'{"❌" if available != space_type else "🟢"}',
           end='\r')
 
