@@ -62,6 +62,8 @@ def finish(msg: str, url: str):
             f'if button returned of result is "Enroll Now" then '
             f'open location "{url}"'
         ])
+    else:
+        print(f'{msg}\n{url}')
 
 
 event = input("Enter the ID to poll: ")
