@@ -86,7 +86,8 @@ while True:
     data = response.json()
 
     space_type = data['body']['detail']['space_type']
-    print(f'{time.strftime("%H:%M:%S")} ==> event is showing '
+    print(f'{time.strftime("%H:%M:%S")} '
+          f'GET #{count} of {args.max_poll} ==> event is showing '
           f'{"❌" if available != space_type else "🟢"}',
           end='\r')
 
